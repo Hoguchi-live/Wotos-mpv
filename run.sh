@@ -1,1 +1,1 @@
-make && ./bin/wotos assets/*
+./bin/wotos assets/aa.mkv

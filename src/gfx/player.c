@@ -33,8 +33,6 @@ void player_init(struct Player *self) {
     mpv_set_wakeup_callback(self->handle, on_mpv_events, NULL);
     mpv_render_context_set_update_callback(self->ctx, on_mpv_render_update, NULL);
 
-    //const char *cmd[] = {"loadfile", argv[1], NULL};
-    //mpv_command(mpv, cmd);
     mpv_set_option_string(self->handle, "loop", "");
     mpv_set_option_string(self->handle, "gpu-api", "opengl");
     mpv_set_option_string(self->handle, "hwdec", "auto");
@@ -65,7 +63,7 @@ static void *get_proc_address(void *ctx, const char *name)
 static void on_mpv_render_update(void *ctx)
 {
     // we set the wakeup flag here to enable the mpv_render_context_render path in the main loop.
-    //wakeup = 1;
+    wakeup = 1;
 }
 
 static void on_mpv_events(void *ctx)
@@ -79,4 +77,9 @@ static inline void check_error(int status)
         printf("MPV API error: %s\n", mpv_error_string(status));
         exit(1);
     }
+}
+
+void player_loadfile(struct Player* self, const char *file){
+    const char *cmd[] = {"loadfile", file, NULL};
+    mpv_command(self->handle, cmd);
 }

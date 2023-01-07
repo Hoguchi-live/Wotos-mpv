@@ -9,18 +9,12 @@
 
 #include "gfx/vao.h"
 #include "gfx/vbo.h"
+#include "gfx/player.h"
+#include "gfx/renderer.h"
 
-//#include "danmaku/danmaku.h"
-
-//#include <cstring>
 #include <unistd.h>
 #include "gfx/shader.h"
 #include "gfx/bitmap.h"
-
-//#include "glm/glm.hpp"
-//#include <glm/gtc/matrix_transform.hpp>
-//#include <glm/gtx/transform.hpp>
-//#include <glm/gtc/type_ptr.hpp>
 
 //#include <sys/socket.h>
 //#include <sys/types.h>
@@ -41,22 +35,15 @@
 //#define STB_IMAGE_IMPLEMENTATION
 //#include <stb/stb_image.h>
 
+
 int main(int argc, char const *argv[]);
 
-int window_width = 1366;
-int window_height = 768;
-int fbo_width = 1366;
-int fbo_height = 768;
+int window_width = 1920;
+int window_height = 1080;
 
 GLFWwindow *wwindow = NULL;
 mpv_handle *mpv;
 mpv_render_context *mpv_ctx;
-
-unsigned int video_framebuffer;
-unsigned int video_textureColorbuffer;
-
-unsigned int screen_framebuffer;
-unsigned int screen_textureColorbuffer;
 
 unsigned int screen_rbo;
 unsigned int video_rbo;
@@ -66,11 +53,14 @@ unsigned int cubeVAO, cubeVBO;
 struct VAO quadVAOTEST;
 struct VBO quadVBOTEST;
 
+struct Player *player;
+struct Renderer *renderer;
+
 float deltaTime, lastFrame;
 unsigned int fcount = 0;
 bool animation=true;
 
-static void *get_proc_address(void *ctx, const char *name);
+//static void *get_proc_address(void *ctx, const char *name);
 void processGLFWInput(GLFWwindow *window, mpv_handle *);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
@@ -84,22 +74,13 @@ float imgVertices[] = {
     1.0f, -1.0f, 0.0f,       1.0f, 0.0f,
     1.0f, 1.0f, 0.0f,       1.0f, 1.0f};
 
-float quadVertices[] = {
-    // positions            // texCoords
-    -1.0f, 1.0f, 0.0f,       0.0f, 1.0f,
-    -1.0f, -1.0f, 0.0f      , 0.0f, 0.0f,
-    1.0f, -1.0f, 0.0f,       1.0f, 0.0f,
 
-    -1.0f, 1.0f, 0.0f,       0.0f, 1.0f,
-    1.0f, -1.0f, 0.0f,       1.0f, 0.0f,
-    1.0f, 1.0f, 0.0f,       1.0f, 1.0f};
+//static void on_mpv_render_update(void *ctx);
+//static void on_mpv_events(void *ctx);
 
+int wakeup = 0;
+extern int wakeup;
 
-static void on_mpv_render_update(void *ctx);
-static void on_mpv_events(void *ctx);
-unsigned int wakeup = 0;
-
-static inline void check_error(int);
 
 bool SetSocketBlockingEnabled(int fd, bool blocking);
 

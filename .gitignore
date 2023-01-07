@@ -2,6 +2,7 @@
 build/*
 assets/*
 bin/*
+.cache/*
 
 # Prerequisites
 *.d
