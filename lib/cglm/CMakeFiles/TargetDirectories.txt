@@ -1,0 +1,9 @@
+/home/assam/git/junko-mpv/lib/cglm/CMakeFiles/cglm.dir
+/home/assam/git/junko-mpv/lib/cglm/CMakeFiles/package.dir
+/home/assam/git/junko-mpv/lib/cglm/CMakeFiles/package_source.dir
+/home/assam/git/junko-mpv/lib/cglm/CMakeFiles/edit_cache.dir
+/home/assam/git/junko-mpv/lib/cglm/CMakeFiles/rebuild_cache.dir
+/home/assam/git/junko-mpv/lib/cglm/CMakeFiles/list_install_components.dir
+/home/assam/git/junko-mpv/lib/cglm/CMakeFiles/install.dir
+/home/assam/git/junko-mpv/lib/cglm/CMakeFiles/install/local.dir
+/home/assam/git/junko-mpv/lib/cglm/CMakeFiles/install/strip.dir
