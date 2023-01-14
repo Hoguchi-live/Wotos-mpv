@@ -3,20 +3,29 @@
 
 #include "gfx.h"
 #include "../util/util.h"
+#include "./renderer.h"
+#include "player.h"
+
+#define WINDOW_NAME "wotos + mpv"
+
+#include <unistd.h> // for usleep
+
+#define MAX(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a > _b ? _a : _b; })
+
+extern struct Renderer *renderer;
+extern struct Window *window;
+
+extern unsigned int screen_rbo;
+extern int wakeup;
+extern mpv_render_context *mpv_ctx;
 
 struct Button {
     bool down, last, last_tick, pressed, pressed_tick;
 };
 
-
-struct Mouse {
-    struct Button buttons[GLFW_MOUSE_BUTTON_LAST];
-    vec2s position, delta;
-};
-
-struct Keyboard {
-    struct Button keys[GLFW_KEY_LAST];
-};
 
 typedef void (*FWindow)();
 
@@ -24,8 +33,6 @@ struct Window {
     GLFWwindow *handle;
     ivec2s size;
     FWindow init, destroy, tick, update, render;
-    struct Mouse mouse;
-    struct Keyboard keyboard;
 
     // timing variables
     u64 last_second;
@@ -33,13 +40,6 @@ struct Window {
     u64 ticks, tps, tick_remainder;
 };
 
-// global window
-extern struct Window window;
-
 void window_loop();
-void window_create(FWindow init, FWindow destroy, FWindow tick,  FWindow update, FWindow render);
-//void mouse_set_grabbed(bool grabbed);
-//bool mouse_get_grabbed();
-
-
+struct Window *window_create(FWindow init, FWindow destroy, FWindow tick,  FWindow update, FWindow render);
 #endif

@@ -1,1 +1,1 @@
-./bin/wotos assets/aa.mkv
+./bin/wotos 

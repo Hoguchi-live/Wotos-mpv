@@ -4,6 +4,7 @@
       "/usr/bin/clang",
       "-Wall",
       "-pedantic",
+      "-Wno-gnu-statement-expression",
       "-Ilib/cglm/include",
       "-Ilib/glad/include",
       "-Ilib/glfw/include",

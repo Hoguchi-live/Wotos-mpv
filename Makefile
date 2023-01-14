@@ -15,7 +15,7 @@ DEPEXT      := d
 OBJEXT      := o
 
 #Flags, Libraries and Includes
-CFLAGS 		:= -Wall -pedantic 
+CFLAGS 		:= -Wall -pedantic -Wno-gnu-statement-expression
 CFLAGS		+= -Ilib/cglm/include -Ilib/glad/include -Ilib/glfw/include -Ilib/stb
 CFLAGS		+= -Iinclude/ -I/usr/include/freetype2 -I/usr/include/stb
 LDFLAGS		:= -lglfw -ldl -lmpv -lfreetype  -lm

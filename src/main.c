@@ -5,6 +5,41 @@
 
 static inline void check_error(int);
 
+void init() {
+    
+}
+
+void update() {
+    processGLFWInput(wwindow, mpv);
+
+    if (wakeup)
+    {
+        if ((mpv_render_context_update(mpv_ctx) & MPV_RENDER_UPDATE_FRAME))
+        {
+            mpv_render_context_render(mpv_ctx, renderer->params_fbo);                 
+            glViewport(0, 0, window->size.x, window->size.y);
+        }
+    }
+}
+
+void render(){
+    shader_bind(renderer->shaders[SHADER_MPV]);
+
+    vao_bind(renderer->screenVAO);
+    glBindTexture(GL_TEXTURE_2D, renderer->video_textureColorbuffer); // <-- SCREEN Colorbuffer IS THE TEXTURE
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // -----
+    if (wakeup)
+    {
+        mpv_render_context_report_swap(mpv_ctx);
+        wakeup = 0;
+    }
+
+    const char *text = "I Joe you Joe ;)";
+    render_text(renderer, text, strlen(text), 0, 0, 0.001, (float [3]){0.0, 1.0, 0.0});
+}
+
 int main(int argc, char const *argv[])
 {
     if (argc < 2){
@@ -12,41 +47,18 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-    ////////// GLFW INIT
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    ///////// Create window
-    if ((wwindow = glfwCreateWindow(window_width, window_height, "a-mpv", NULL, NULL)) == NULL){
-        printf("ERROR::GLFW::Failed to create window\n");
-        return -1;
-    }
-    glfwMakeContextCurrent(wwindow);
-    glfwSetFramebufferSizeCallback(wwindow, framebuffer_size_callback);
+    /*
+       Create the main window
+       wwindow is temporary
+    */
+    FWindow nof = NULL;
+    window = window_create(init, nof, nof, update, render);
 
-    ///////// Load GLAD
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
-        printf("ERROR::GLAD::Failed to initialize GLAD\n");
-        return -1;
-    }
+    wwindow = window->handle;
 
-    //////////// Initializing placeholder for FT text glyphs
-    //std::map<char, Character> Characters;
-    //makeBitmaps(Characters);
-
-    ///////// GL parameters
-    glEnable(GL_DEPTH);
-    glEnable(GL_MULTISAMPLE);
-    glfwWindowHint(GLFW_SAMPLES, 4);
-
-    /* Glyph shenanigans
-       */
-
-    //mat4s transformation = glms_ortho(0.0f, (float)(window_width), 0.0f, (float)window_height, -100, 100);
-
-    /*  Setting up MPV player 
+    /*  
+        Set up the MPV player 
         The mpv and mpv_ctx variables are temporary
     */
     player = player_create();
@@ -54,13 +66,20 @@ int main(int argc, char const *argv[])
     mpv = player->handle;
     mpv_ctx = player->ctx;
 
+
     /*  Setting the renderer
-        The mpv and mpv_ctx variables are temporary
     */
     renderer = renderer_create();
     renderer_init(renderer);
+
+    /* 
+       Glyph shenanigans
+    */
+    //mat4s transformation = glms_ortho(0.0f, (float)(window_width), 0.0f, (float)window_height, -100, 100);
     
-    // this doesn't work when called inside the Renderer struct...
+
+
+    // this doesn't work when called from inside the Renderer struct...
     int flip_y = 1;
     renderer->params_fbo = (mpv_render_param [3]){
         {MPV_RENDER_PARAM_OPENGL_FBO, &(renderer->mpv_fbo)},
@@ -70,84 +89,21 @@ int main(int argc, char const *argv[])
     /*  
         Start video playback
     */
-    const char filename[] = "https://stream.wotos.eu/snw_master.m3u8";
-    player_loadfile(player, filename);
+    player_loadfile(player, argv[1]);
 
-    const char *text = "I Joe";
+
+    window_loop();
 
     while (!glfwWindowShouldClose(wwindow))
     {
-        fcount++;
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        //if (fcount % 100 == 0){
-        //    std::cout << "FPS: " << 1 / deltaTime << "\n" << std::endl;
-        //    }
-        processGLFWInput(wwindow, mpv);
-        // -----
-
-        if (wakeup)
-        {
-            if ((mpv_render_context_update(mpv_ctx) & MPV_RENDER_UPDATE_FRAME))
-            {
-                mpv_render_context_render(mpv_ctx, renderer->params_fbo); // this "renders" to the video_framebuffer "linked by ID" in the params_fbo - BLOCKING
-                glViewport(0, 0, window_width, window_height);  // fucky
-            }
-        }
-        //screenShader->use();
-        shader_bind(renderer->shaders[SHADER_MPV]);
-
-        vao_bind(renderer->screenVAO);
-        glBindTexture(GL_TEXTURE_2D, renderer->video_textureColorbuffer); // <-- SCREEN Colorbuffer IS THE TEXTURE
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        // -----
-        if (wakeup)
-        {
-            mpv_render_context_report_swap(mpv_ctx);
-            wakeup = 0;
-        }
-
-        render_text(renderer, text, strlen(text), 0, 0, 0.001, (float [3]){0.0, 1.0, 0.0});
-
-        //glUniformMatrix4fv(glGetUniformLocation(renderer->shaders[SHADER_GLYPH].handle, "ransformation"), 1, GL_FALSE, (GLfloat *)&transformation.raw);
-
-        //Distance during deltaTime for consistent translation
-
-        //// Draw image
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        //imgShader->use();
-        //glBindVertexArray(imgVBO); // <-- The SCREEN QUAD
-        //glBindTexture(GL_TEXTURE_2D, imgTex); // <-- SCREEN Colorbuffer IS THE TEXTURE
-
-        //imgMatrix = glm::translate(imgMatrix, glm::vec3(0.5/deltaPix, 0.0f, 0.0f));
-        //glUniformMatrix4fv(glGetUniformLocation(imgShader->ID, "transformation"), 1, GL_FALSE, glm::value_ptr(imgMatrix));
-
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
-         // // Glyphs
-        //transformation = glm::translate(transformation, glm::vec3(deltaPix , 0.0f, 0.0f));
-
-
-        /////////////////////////////////////////// SOCKET
-
-        //recv_bytes = recv(sock, buffer, RECV_BUFFER_SIZE, 0);
-        //if(recv_bytes >= 1){
-        //    danmakus.push_back({buffer, 1, (float)window_width, 400.0f, 1, 0, 0});
-        //}
-        //std::cout << danmakus.front().text << std::endl;
-
-        /////////////////////////////////////////// Danmaku update
-        //updateDanmakus(r);
-
-        //}
 
         glfwSwapBuffers(wwindow);
         glfwPollEvents();
-        usleep(16 * 1000); // we LIMIT the main render loop to 100FPS! If VSYSNC is enabled the limit is the VSYNC limit (~60fps)
     }
     renderer_destroy(renderer);
     player_destroy(player);

@@ -11,10 +11,10 @@
 #include "gfx/vbo.h"
 #include "gfx/player.h"
 #include "gfx/renderer.h"
-
-#include <unistd.h>
 #include "gfx/shader.h"
 #include "gfx/bitmap.h"
+#include "gfx/window.h"
+
 
 //#include <sys/socket.h>
 //#include <sys/types.h>
@@ -41,6 +41,7 @@ int main(int argc, char const *argv[]);
 int window_width = 1920;
 int window_height = 1080;
 
+struct Window *window;
 GLFWwindow *wwindow = NULL;
 mpv_handle *mpv;
 mpv_render_context *mpv_ctx;
@@ -50,14 +51,10 @@ unsigned int video_rbo;
 unsigned int quadVAO, quadVBO;
 unsigned int cubeVAO, cubeVBO;
 
-struct VAO quadVAOTEST;
-struct VBO quadVBOTEST;
-
 struct Player *player;
 struct Renderer *renderer;
 
 float deltaTime, lastFrame;
-unsigned int fcount = 0;
 bool animation=true;
 
 //static void *get_proc_address(void *ctx, const char *name);
@@ -79,7 +76,7 @@ float imgVertices[] = {
 //static void on_mpv_events(void *ctx);
 
 int wakeup = 0;
-extern int wakeup;
+//extern int wakeup;
 
 
 bool SetSocketBlockingEnabled(int fd, bool blocking);
