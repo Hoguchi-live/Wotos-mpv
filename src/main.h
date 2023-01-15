@@ -42,9 +42,8 @@ int window_width = 1920;
 int window_height = 1080;
 
 struct Window *window;
-GLFWwindow *wwindow = NULL;
-mpv_handle *mpv;
-mpv_render_context *mpv_ctx;
+
+int flip_y = 1;
 
 unsigned int screen_rbo;
 unsigned int video_rbo;
@@ -77,6 +76,11 @@ float imgVertices[] = {
 
 int wakeup = 0;
 //extern int wakeup;
+
+void init();
+void update();
+void render();
+
 
 
 bool SetSocketBlockingEnabled(int fd, bool blocking);

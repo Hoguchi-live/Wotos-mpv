@@ -16,6 +16,8 @@ enum ShaderType {
     SHADER_BASIC_TEXTURE
 };
 
+extern int flip_y;
+
 
 struct Renderer{
     struct Shader shaders[SHADERS_LAST + 1];

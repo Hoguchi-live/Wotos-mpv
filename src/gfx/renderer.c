@@ -41,11 +41,9 @@ void renderer_init(struct Renderer *self) {
             { .index = 0, .name = "texcoord" }
         });
 
-    // Define buffers
     _renderer_mpv(self);
     _renderer_glyph(self);
 
-    // Create bitmaps
     self->atlas = makeBitmaps();
 }
 
@@ -57,6 +55,7 @@ void renderer_destroy(struct Renderer *self) {
     vao_destroy(self->screenVAO);
     vbo_destroy(self->screenVBO);
 
+    free(self->params_fbo);
     free(self);
 }
 
@@ -102,9 +101,17 @@ void _renderer_mpv(struct Renderer *self) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, self->video_textureColorbuffer, 0);
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
         printf("ERROR::FRAMEBUFFER:: VIDEO Framebuffer #%d is not complete!\n", self->video_framebuffer);
+    }
     self->mpv_fbo = (mpv_opengl_fbo){(int)(self->video_framebuffer), fbo_width, fbo_height, 0};
+
+    self->params_fbo = malloc(sizeof(mpv_render_param [3]));
+    memcpy(self->params_fbo, (mpv_render_param [3]){
+        {MPV_RENDER_PARAM_OPENGL_FBO, &(self->mpv_fbo)},
+        {MPV_RENDER_PARAM_FLIP_Y, &flip_y},
+        {MPV_RENDER_PARAM_INVALID, NULL}}, sizeof(mpv_render_param [3]));
+
 }
 
 /*

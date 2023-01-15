@@ -3,42 +3,32 @@
 #include "gfx/vbo.h"
 #include "glad/glad.h"
 
-static inline void check_error(int);
-void init();
-void update();
-void render();
-
+static inline void check_error(int); 
+static inline void _setup();
 
 int main(int argc, char const *argv[]){
     if (argc < 2){ return -1;}
+    _setup();
 
-    /* Create the main window*/
-    window = window_create(init, NULL, NULL, update, render);
-
-    /*  Set up the MPV player*/
-    player = player_create();
-    player_init(player);
-
-    /*  Setting the renderer*/
-    renderer = renderer_create();
-    renderer_init(renderer);
-
-    /* Glyph shenanigans */
-    //mat4s transformation = glms_ortho(0.0f, (float)(window_width), 0.0f, (float)window_height, -100, 100);
-
-    // this doesn't work when called from inside the Renderer struct...
-    int flip_y = 1;
-    renderer->params_fbo = (mpv_render_param [3]){
-        {MPV_RENDER_PARAM_OPENGL_FBO, &(renderer->mpv_fbo)},
-        {MPV_RENDER_PARAM_FLIP_Y, &flip_y},
-        {MPV_RENDER_PARAM_INVALID, NULL}};
-
-    /*  Start video playback */
     player_loadfile(player, argv[1]);
     window_loop();
     return 0;
 }
 
+void _setup(){
+    window = window_create(init, NULL, NULL, update, render);
+
+    player = player_create();
+    player_init(player);
+
+    renderer = renderer_create();
+    renderer_init(renderer); 
+
+    /* Glyph shenanigans */
+    //mat4s transformation = glms_ortho(0.0f, (float)(window_width), 0.0f, (float)window_height, -100, 100);
+}
+
+// TODO Remove these function from here 
 void processGLFWInput(GLFWwindow *window, mpv_handle *ctx)
 {
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_FALSE);

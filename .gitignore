@@ -1,8 +1,8 @@
 # Other
-build/*
-assets/*
-bin/*
-.cache/*
+build/**
+assets/**
+bin/**
+.cache/**
 
 # Prerequisites
 *.d
