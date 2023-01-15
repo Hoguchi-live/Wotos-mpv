@@ -3,22 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void _size_callback(GLFWwindow *handle, int width, int height) {
-    glViewport(0, 0, width, height);
-    window->size = (ivec2s) {{height, width}};
+static void _init();
+static void _update();
+static void _render();
+static void _destroy();
+static void _tick();
 
-    window->size.x = width;
-    window->size.y = height;
-    glBindTexture(GL_TEXTURE_2D, renderer->screen_textureColorbuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glBindRenderbuffer(GL_RENDERBUFFER, screen_rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-}
-
-
-static void _error_callback(int code, const char *description) {
-    fprintf(stderr, "GLFW error %d: %s\n", code, description);
-}
+static void _size_callback(GLFWwindow *handle, int width, int height);
+static void _error_callback(int code, const char *description);
 
 struct Window *window_create(FWindow init, FWindow destroy, FWindow tick,  FWindow update, FWindow render) {
     struct Window *window = malloc(sizeof(struct Window));
@@ -73,31 +65,6 @@ struct Window *window_create(FWindow init, FWindow destroy, FWindow tick,  FWind
     return window;
 }
 
-static void _init() {
-    window->init();
-}
-
-static void _destroy() {
-    window->destroy();
-    player_destroy(player);
-    renderer_destroy(renderer);
-    glfwTerminate();
-}
-
-static void _tick() {
-    window->ticks++;
-    window->tick();
-}
-
-static void _update() {
-    window->update();
-}
-
-static void _render() {
-    window->frames++;
-    window->render();
-}
-
 void window_loop() {
     _init();
 
@@ -136,4 +103,45 @@ void window_loop() {
 
     _destroy();
     exit(0);
+}
+
+static void _size_callback(GLFWwindow *handle, int width, int height) {
+    glViewport(0, 0, width, height);
+    window->size = (ivec2s) {{height, width}};
+
+    window->size.x = width;
+    window->size.y = height;
+    glBindTexture(GL_TEXTURE_2D, renderer->screen_textureColorbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glBindRenderbuffer(GL_RENDERBUFFER, screen_rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+}
+
+static void _error_callback(int code, const char *description) {
+    fprintf(stderr, "GLFW error %d: %s\n", code, description);
+}
+
+static void _init() {
+    window->init();
+}
+
+static void _destroy() {
+    window->destroy();
+    player_destroy(player);
+    renderer_destroy(renderer);
+    glfwTerminate();
+}
+
+static void _tick() {
+    window->ticks++;
+    window->tick();
+}
+
+static void _update() {
+    window->update();
+}
+
+static void _render() {
+    window->frames++;
+    window->render();
 }
