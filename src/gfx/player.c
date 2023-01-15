@@ -49,8 +49,8 @@ struct Player* player_create() {
     return malloc(sizeof(struct Player));
 }
 
-void player_destroy(struct Player* op) {
-    free(op);
+void player_destroy(struct Player* self) {
+    free(self);
 }
 
 

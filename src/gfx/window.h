@@ -15,12 +15,12 @@
        __typeof__ (b) _b = (b); \
      _a > _b ? _a : _b; })
 
+extern struct Player *player;
 extern struct Renderer *renderer;
 extern struct Window *window;
 
 extern unsigned int screen_rbo;
 extern int wakeup;
-extern mpv_render_context *mpv_ctx;
 
 struct Button {
     bool down, last, last_tick, pressed, pressed_tick;

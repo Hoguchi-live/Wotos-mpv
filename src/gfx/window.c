@@ -79,6 +79,8 @@ static void _init() {
 
 static void _destroy() {
     window->destroy();
+    player_destroy(player);
+    renderer_destroy(renderer);
     glfwTerminate();
 }
 
@@ -97,7 +99,7 @@ static void _render() {
 }
 
 void window_loop() {
-    //_init();
+    _init();
 
     while (!glfwWindowShouldClose(window->handle)) {
         const u64 now = time(NULL);
@@ -114,25 +116,19 @@ void window_loop() {
 
             printf("FPS: %ld | TPS: %ld\n", window->fps, window->tps);
         }
-        /* TEST FOR REPLACEMENET OF MAIN LOOP
-        */
 
-
-        /* END TEST FOR REPLACEMENET OF MAIN LOOP
-        */
-
-
-        //// tick processing
-        //const u64 NS_PER_TICK = (NS_PER_SECOND / 60);
-        //u64 tick_time = window->frame_delta + window->tick_remainder;
-        //while (tick_time > NS_PER_TICK) {
-        //    _tick();
-        //    tick_time -= NS_PER_TICK;
-        //}
-        //window->tick_remainder = MAX(tick_time, 0);
+        // tick processing
+        const u64 NS_PER_TICK = (NS_PER_SECOND / 60);
+        u64 tick_time = window->frame_delta + window->tick_remainder;
+        while (tick_time > NS_PER_TICK) {
+            _tick();
+            tick_time -= NS_PER_TICK;
+        }
+        window->tick_remainder = MAX(tick_time, 0);
 
         _update();
         _render();
+
         glfwSwapBuffers(window->handle);
         glfwPollEvents();
         usleep(16 * 1000); // we LIMIT the main render loop to 100FPS! If VSYSNC is enabled the limit is the VSYNC limit (~60fps)
@@ -140,12 +136,4 @@ void window_loop() {
 
     _destroy();
     exit(0);
-}
-
-void mouse_set_grabbed(bool grabbed) {
-    glfwSetInputMode(window->handle, GLFW_CURSOR, grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
-}
-
-bool mouse_get_grabbed() {
-    return glfwGetInputMode(window->handle, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
 }
