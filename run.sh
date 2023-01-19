@@ -1,1 +1,1 @@
-./bin/wotos 
+make run ARGS=assets/aa.mkv

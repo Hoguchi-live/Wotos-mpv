@@ -3,6 +3,13 @@ build/**
 assets/**
 bin/**
 .cache/**
+src/old/**
+
+# Bear config 
+./compile_commands.json
+
+# Shortcut launchers
+./*.sh
 
 # Prerequisites
 *.d

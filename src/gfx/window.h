@@ -4,9 +4,9 @@
 #include "gfx.h"
 #include "../util/util.h"
 #include "./renderer.h"
-#include "player.h"
+#include "./player.h"
 
-#define WINDOW_NAME "wotos + mpv"
+#define WINDOW_NAME "Wotos-mpv"
 
 #include <unistd.h> // for usleep
 
