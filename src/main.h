@@ -2,7 +2,6 @@
 #define _MAIN_H_
 
 #include "window_setup.h"
-#include "socket_setup.h"
 
 #include "connection/sock.h"
 #include <fcntl.h>

@@ -3,10 +3,7 @@
 bool SetSocketBlockingEnabled(int fd, bool blocking);
 
 void _setup(){
-    sock = socket_create();
-    socket_init(sock);
-    socket_listen(sock);
-    socket_accept();
+    sock = socket_init_start();
     //window = window_create(init, destroy, tick, update, render);
     //player = player_create();
     //renderer = renderer_create();
